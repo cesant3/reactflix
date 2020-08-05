@@ -3,62 +3,26 @@ import { Link } from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault';
 import FormField from '../../../components/FormFields';
 import Button from '../../../components/Button';
+import useForm from '../../../hooks/useForm';
+import categoriasRepository from '../../../repositories/categorias';
 
 function CadastroCategoria() {
-  
   const valoresIniciais = {
     nome: '',
     descricao: '',
     cor: '',
   }
+
+  const { handleChange, values, clearForm } = useForm(valoresIniciais);
+
   const [categorias, setCategorias] = useState([]);
-  const [values, setValues] = useState(valoresIniciais);
-
-  function setValue(chave, valor) {
-    setValues({
-      ...values,
-      [chave]: valor,
-    })
-  }
-
-  function handleChange(infosDoEvento) {
-    setValue(
-      infosDoEvento.target.getAttribute('name'),
-      infosDoEvento.target.value
-    );
-  }
 
   useEffect(() => {
-    console.log("aroaroarooar");
-    const URL = window.location.hostname.includes('localhost') 
-    ? 'http://localhost:8080/categorias'
-    : 'https://carlosflix.herokuapp.com/categorias';
-
-    fetch(URL)
-      .then(async (respostaDoServidor) => {
-        const resposta = await respostaDoServidor.json();
-        setCategorias([
-          ...resposta,
-        ]);
+    categoriasRepository.getAllWithVideos()
+      .then((categoriasComVideos) => {
+        console.log(categoriasComVideos);
       });
-
-    {/*setTimeout(() => {
-      setCategorias([
-        ...categorias,
-        {
-          "id": 1,
-          "nome": "Front-End",
-          "descricao": "Uma categoria show",
-          "cor": "#cbd1ff"
-      },
-      {
-          "id": 2,
-          "nome": "Back-End",
-          "descricao": "Outra categoria show",
-          "cor": "#cbd1ff"
-      },
-      ]);
-    }, 4 * 1000);*/}
+    
   },[]);
 
   return (
@@ -72,7 +36,7 @@ function CadastroCategoria() {
             values
           ]);
 
-          setValues(valoresIniciais);
+          clearForm();
 
           }}>
 
